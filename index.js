@@ -4,6 +4,7 @@ const express = require("express");
 let cors = require("cors");
 const app = express();
 const productRoutes = require("./src/routes/products");
+const authsRoutes = require("./src/routes/auths");
 // const router = express.Router();
 
 // router.use("/product", (req, res, next) => {
@@ -30,7 +31,10 @@ const productRoutes = require("./src/routes/products");
 //   next();
 // });
 app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 // ketika mengakses localhost:4000 maka akan diarahkan ke app.use ke url '/' dan memanggil router
-app.use("/", productRoutes);
+app.use("/v1/blog", productRoutes);
+app.use("/v1/auth", authsRoutes);
 
 app.listen(4000);
