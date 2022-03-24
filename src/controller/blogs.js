@@ -1,37 +1,45 @@
 const { validationResult } = require("express-validator");
+const blogPost = require("../models/blog");
 
 exports.postBlog = (req, res, next) => {
   const title = req.body.title;
   const image = req.body.image;
   const body = req.body.body;
-
   const error = validationResult(req);
 
-  const data = {
-    message: "Create Blog Success",
-    data: {
-      post_id: 1,
-      title: title,
-      image: image,
-      body: body,
-      created_at: "21/03/2022",
-      author: {
-        uid: 1,
-        name: "sans",
-      },
+  const Post = new blogPost({
+    title: title,
+    body: body,
+    image: req.file.path,
+    author: {
+      uid: 1,
+      name: "sans",
     },
-  };
+  });
+
   if (!error.isEmpty()) {
-    console.log(error);
+    //vaidasi input
     res.status(400).json({
       message: "terdapat kesalahan input mohon dicek kembali",
       data: error.array(),
     });
+  } else if (!req.file) {
+    //validasi image
+    res.status(402).json({
+      message: "image wajib diupload",
+      data: error.array(),
+    });
   } else {
-    res.status(201).json(data);
+    //post data ke mongodb
+    Post.save()
+      .then((result) =>
+        res.status(201).json({
+          message: "Create Blog Success",
+          data: result,
+        })
+      )
+      .catch((err) => console.log("ERR : ", err));
   }
-
-  next(); //next digunakan untuk meneruskan ke fungsi method selanjutnya jika ada
 };
 
 exports.getBlog = (req, res, next) => {

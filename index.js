@@ -4,6 +4,7 @@ const express = require("express");
 let cors = require("cors");
 const app = express();
 const mongoose = require("mongoose");
+const multer = require("multer");
 const authsRoutes = require("./src/routes/auths");
 const blogsRoutes = require("./src/routes/blogs");
 // const router = express.Router();
@@ -31,6 +32,29 @@ const blogsRoutes = require("./src/routes/blogs");
 //   });
 //   next();
 // });
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "imagesUpload");
+  },
+  filename: (req, file, cb) => {
+    cb(null, new Date().getTime() + "-" + file.originalname);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+app.use(multer({ storage: storage, fileFilter: fileFilter }).single("image"));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

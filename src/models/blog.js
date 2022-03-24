@@ -1,20 +1,24 @@
-import mongoose from "mongoose";
-const { Schema } = mongoose;
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
 // format model
 const blogPost = new Schema(
   {
     title: {
       type: String,
-      required,
+      required: true,
     },
     body: {
       type: String,
-      required,
+      required: true,
+    },
+    image: {
+      type: String,
+      required: true,
     },
     author: {
       type: Object,
-      required,
+      required: true,
     },
   },
   {

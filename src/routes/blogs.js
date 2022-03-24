@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
-
 const controllerBlogs = require("../controller/blogs");
 
 router.post(
@@ -11,6 +10,7 @@ router.post(
       .isLength({ min: 5 })
       .withMessage("kesalahan input pada title"),
     body("body").isLength({ min: 5 }).withMessage("kesalahan input pada body"),
+    body("image").isLength({ min: 1 }).withMessage("image wajib diupload"),
   ],
   controllerBlogs.postBlog
 );
