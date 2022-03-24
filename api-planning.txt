@@ -44,6 +44,52 @@ err response:
 GROUP: Blog
 
 [1] - Read/Get Blog Post
+[GET] : {root.api}/{version}/blog/Get
+
+res:
+{
+    "post_id": 1,
+    "title": "title blog",
+    "image": "image.png",
+    "body": "Lorem isi blog",
+    "author": {
+        "uid": 1,
+        "name": "sans"
+    }
+}
+
+err response:
+200 - Get API Success
+
 [2] - Create Blog Post
+[POST] : {root.api}/{version}/blog/Post
+
+req: 
+{
+    "title": "title blog",
+    "image": "image.png",
+    "body": "Lorem isi blog"
+}
+
+res: 
+{
+    "message": "Create Blog Success",
+    "data": {
+        "post_id": 1,
+        "title": "title blog",
+        "image": "image.png",
+        "body": "Lorem isi blog",
+        "created_at": "21/03/2022",
+        "author": {
+            "uid": 1,
+            "name": "sans"
+        }
+    }
+}
+
+err response: 
+201 - Blog Post Berhasil Dibuat
+400 - Input Yang Anda Masukkan Salah
+
 [3] - Update Blog Post
 [4] - Delete Blog Post

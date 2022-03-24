@@ -14,5 +14,5 @@ exports.register = (req, res, next) => {
   };
 
   res.status(201).json(data);
-  next();
+  next(); //next digunakan untuk meneruskan ke fungsi method selanjutnya jika ada
 };
