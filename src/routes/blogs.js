@@ -15,6 +15,7 @@ router.post(
   controllerBlogs.postBlog
 );
 router.get("/", controllerBlogs.getBlog);
+router.get("/post/:idPost", controllerBlogs.getBlogById);
 router.patch("/update", controllerBlogs.updateBlog);
 router.delete("/delete", controllerBlogs.deleteBlog);
 

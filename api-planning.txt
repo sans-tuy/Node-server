@@ -59,7 +59,7 @@ res:
 }
 
 err response:
-200 - Get API Success
+200 - Get All Blog Success
 
 [2] - Create Blog Post
 [POST] : {root.api}/{version}/blog/Post

@@ -7,6 +7,7 @@ exports.postBlog = (req, res, next) => {
   const body = req.body.body;
   const error = validationResult(req);
 
+  // body request dari blogPost
   const Post = new blogPost({
     title: title,
     body: body,
@@ -17,6 +18,7 @@ exports.postBlog = (req, res, next) => {
     },
   });
 
+  // validasi form
   if (!error.isEmpty()) {
     //vaidasi input
     res.status(400).json({
@@ -43,23 +45,37 @@ exports.postBlog = (req, res, next) => {
 };
 
 exports.getBlog = (req, res, next) => {
-  const data = {
-    message: "Get API Blog Success",
-    data: {
-      post_id: 1,
-      title: "title blog",
-      image: "image.png",
-      body: "body blog",
-      created_at: "21/03/2022",
-      author: {
-        uid: 1,
-        name: "sans",
-      },
-    },
-  };
+  blogPost
+    .find()
+    .then((result) => {
+      res.status(200).json({
+        message: "Get All Blog Success",
+        data: result,
+      });
+    })
+    .catch((err) => console.log(error));
+};
 
-  res.status(200).json(data);
-  next(); //next digunakan untuk meneruskan ke fungsi method selanjutnya jika ada
+exports.getBlogById = (req, res, next) => {
+  const postId = req.params.idPost;
+  blogPost
+    .findById(postId)
+    .then((result) => {
+      if (!result) {
+        const error = new Error("data tidak ditemukan");
+        error.status = 404;
+        throw error;
+      }
+      res.status(200).json({
+        message: "data ditemukan",
+        data: result,
+      });
+    })
+    .catch(() => {
+      const error = new Error("data tidak ditemukan");
+      error.status = 404;
+      throw error;
+    });
 };
 
 exports.updateBlog = (req, res, next) => {
@@ -84,7 +100,6 @@ exports.updateBlog = (req, res, next) => {
   };
 
   res.status(201).json(data);
-  next(); //next digunakan untuk meneruskan ke fungsi method selanjutnya jika ada
 };
 
 exports.deleteBlog = (req, res, next) => {
