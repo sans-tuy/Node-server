@@ -1,9 +1,11 @@
 const { validationResult } = require("express-validator");
 const blogPost = require("../models/blog");
+const path = require("path");
+const fs = require("fs");
 
 exports.postBlog = (req, res, next) => {
   const title = req.body.title;
-  const image = req.body.image;
+  const image = req.file.path;
   const body = req.body.body;
   const error = validationResult(req);
 
@@ -11,7 +13,7 @@ exports.postBlog = (req, res, next) => {
   const Post = new blogPost({
     title: title,
     body: body,
-    image: req.file.path,
+    image: image,
     author: {
       uid: 1,
       name: "sans",
@@ -25,7 +27,7 @@ exports.postBlog = (req, res, next) => {
       message: "terdapat kesalahan input mohon dicek kembali",
       data: error.array(),
     });
-  } else if (!req.file) {
+  } else if (req.file === undefined) {
     //validasi image
     res.status(402).json({
       message: "image wajib diupload",
@@ -71,57 +73,73 @@ exports.getBlogById = (req, res, next) => {
         data: result,
       });
     })
-    .catch(() => {
-      const error = new Error("data tidak ditemukan");
-      error.status = 404;
-      throw error;
+    .catch((err) => {
+      console.log(err);
     });
 };
 
 exports.updateBlog = (req, res, next) => {
+  const postId = req.params.idPost;
   const title = req.body.title;
-  const image = req.body.image;
+  const image = req.file.path;
   const body = req.body.body;
-  const idBlog = req.body.post_id;
+  const error = validationResult(req);
 
-  const data = {
-    message: "Update Blog Success",
-    data: {
-      post_id: 1,
-      title: title,
-      image: image,
-      body: body,
-      created_at: "21/03/2022",
-      author: {
-        uid: 1,
-        name: "sans",
-      },
-    },
-  };
-
-  res.status(201).json(data);
+  if (!error.isEmpty()) {
+    //vaidasi input
+    res.status(400).json({
+      message: "terdapat kesalahan input mohon dicek kembali",
+      data: error.array(),
+    });
+  } else if (!req.file) {
+    //validasi image
+    res.status(402).json({
+      message: "image wajib diupload",
+      data: error.array(),
+    });
+  } else {
+    //post data ke mongodb
+    blogPost
+      .findById(postId)
+      .then((result) => {
+        result.title = title;
+        result.image = image;
+        result.body = body;
+        return result.save();
+      })
+      .then((result) => {
+        res.status(201).json({
+          message: "Update Blog Berhasil",
+          data: result,
+        });
+      })
+      .catch((err) => console.log("err : ", err));
+  }
 };
 
 exports.deleteBlog = (req, res, next) => {
-  const title = req.body.title;
-  const image = req.body.image;
-  const body = req.body.body;
-
-  const data = {
-    message: "Delete Blog Success",
-    data: {
-      post_id: 1,
-      title: title,
-      image: image,
-      body: body,
-      created_at: "21/03/2022",
-      author: {
-        uid: 1,
-        name: "sans",
-      },
-    },
+  const postId = req.params.idPost;
+  const removeImage = (pathImage) => {
+    const linnk = path.join(__dirname, "../..", pathImage);
+    fs.unlink(linnk, (err) => console.log("err: ", err));
   };
 
-  res.status(201).json(data);
-  next(); //next digunakan untuk meneruskan ke fungsi method selanjutnya jika ada
+  blogPost
+    .findById(postId)
+    .then((result) => {
+      if (!result) {
+        const error = new Error("data tidak ditemukan");
+        error.status = 404;
+        throw error;
+      }
+      removeImage(result.image);
+      return blogPost.findByIdAndRemove(postId);
+    })
+    .then((result) => {
+      res.status(201).json({
+        message: "delete berhasil",
+        data: result,
+      });
+    })
+    .catch((err) => console.log(err));
 };

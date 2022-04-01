@@ -10,13 +10,21 @@ router.post(
       .isLength({ min: 5 })
       .withMessage("kesalahan input pada title"),
     body("body").isLength({ min: 5 }).withMessage("kesalahan input pada body"),
-    body("image").isLength({ min: 1 }).withMessage("image wajib diupload"),
   ],
   controllerBlogs.postBlog
 );
 router.get("/", controllerBlogs.getBlog);
 router.get("/post/:idPost", controllerBlogs.getBlogById);
-router.patch("/update", controllerBlogs.updateBlog);
-router.delete("/delete", controllerBlogs.deleteBlog);
+router.put(
+  "/post/:idPost",
+  [
+    body("title")
+      .isLength({ min: 5 })
+      .withMessage("kesalahan input pada title"),
+    body("body").isLength({ min: 5 }).withMessage("kesalahan input pada body"),
+  ],
+  controllerBlogs.updateBlog
+);
+router.delete("/post/:idPost", controllerBlogs.deleteBlog);
 
 module.exports = router;
