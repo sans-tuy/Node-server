@@ -58,7 +58,7 @@ const fileFilter = (req, file, cb) => {
 
 //middleware untuk membuat static url agar bisa mengakses image didalam folder
 //__dirname berarti direktori projectnya "imagesUpload" berarti lokasi image disimpan dalam project
-app.use("/images", express.static(path.join(__dirname, "imagesUpload")));
+app.use("/imagesUpload", express.static(path.join(__dirname, "imagesUpload")));
 // middleware untuk menggunakan multipost agar bisa mengupload image
 app.use(multer({ storage: storage, fileFilter: fileFilter }).single("image"));
 // middleware untuk mengatasi error cors ketika mengakses api
